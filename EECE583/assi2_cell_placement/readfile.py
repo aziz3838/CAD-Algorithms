@@ -24,6 +24,7 @@ blocklist is a list of SETS
 
 import numpy
 
+
 def read(file):
     #Open the benchmark file
     f = open(file, 'r')
