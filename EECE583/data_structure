@@ -1,0 +1,5 @@
+grid[w][h]
+	state: 0=free, 1=obstacle, 2=pin, 3=wire
+	pin(or block)_belong_to_wire: -1=not assigned. other=wire number
+	
+tag[w][h]
