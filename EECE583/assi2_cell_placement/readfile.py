@@ -25,7 +25,7 @@ blocklist is a list of SETS
 import numpy
 
 
-def read(file):
+def readfile(file):
     #Open the benchmark file
     f = open(file, 'r')
     
@@ -50,4 +50,4 @@ def read(file):
 #                 print block, net
                 
     print blocklist
-    return blocklist, num_rows, num_cols
+    return netlist, blocklist, num_rows, num_cols
