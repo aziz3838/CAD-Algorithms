@@ -9,14 +9,13 @@ Iterate all blocks in blocklist:
             place the block
             
             
-locate(x, y):
-this function helps make cost calculation easier. The same information can be retrieved by looking at the grid list.
-Basically, gird & location are the reverse of each other. So, they should be update together all the time. Therefore: def place(block)num, row, col)
+
 '''
 
 import numpy
 import random
 import sys
+import math
 
 
 class Placement:
@@ -29,10 +28,9 @@ class Placement:
         self.location = numpy.empty(len(self.blocklist), dtype=object)
         self.location.fill(-1);
         self.grid = numpy.empty((self.num_rows, self.num_cols))
-        self.grid.fill(-1)   #this is terrible for performance. I don't need to use a negative number
-        
+        self.grid.fill(-1)   #this is terrible for performance. I don't need to use a negative number  
         #initialize grid with random placement
-        for block_num in range(0, len(self.blocklist)):
+        for block_num in xrange(0, len(self.blocklist)):
             placed = False;
             while(placed == False):
                 row = random.randrange(0, self.num_rows)
@@ -43,9 +41,8 @@ class Placement:
         
 #         print self.grid
 #         print self.location
-        
-        print self.initialTotalCost()
-    
+        self.cost = self.totalCost()
+#         print self.totalCost()
         return 0
     
     
@@ -83,9 +80,9 @@ class Placement:
         calculate costPerNet, add it to totalCost
     return totalCost
     '''
-    def initialTotalCost(self):
+    def totalCost(self):
         totalCost = 0
-        for net in range(0, len(self.netlist)):
+        for net in xrange(0, len(self.netlist)):
             totalCost += self.costPerNet(self.netlist[net])
         return totalCost
     
@@ -93,18 +90,87 @@ class Placement:
     def incrementalCost(self):
         return 0
     
+    '''
+    locate(x, y):
+    this function helps make cost calculation easier. The same information can be retrieved by looking at the grid list.
+    '''
     def locate(self, block):
         row = self.location[block][0]
         col = self.location[block][1]
         return row, col
     
+    '''
+    Basically, gird & location are the reverse of each other. So, they should be update together all the time. Therefore: def place(block)num, row, col)
+    '''
     def place(self, block_num, row, col):
         self.grid[row][col] = block_num
         self.location[block_num] = (row, col)
         return
     
+    '''
+    Inputs: grid POSITIONS. This is important, becase we need to include empty cells in our swaps
+    we need to update both grid, and location. We cannot use "place", because some blocks are empty
+    '''
+    def swap(self, pos1, pos2):
+        #If both positions are empty cells, exit function
+        if(self.isEmptyPos(pos1) and self.isEmptyPos(pos2)):
+            return
+        
+        block_in_pos1 = self.grid[pos1[0]][pos1[1]]
+        block_in_pos2 = self.grid[pos2[0]][pos2[1]]
+            
+        #Update Location. Be careful with how the swap is happening
+        #If position2 is not empty (contains block), then, block2: position1 is your new position.
+        if(not self.isEmptyPos(pos2)):
+            self.location[block_in_pos2] = (pos1[0], pos1[1])
+        if(not self.isEmptyPos(pos1)):
+            self.location[block_in_pos1] = (pos2[0], pos2[1])
+
+ 
+        #Update grid:
+        self.grid[pos1[0]][pos1[1]] = block_in_pos2
+        self.grid[pos2[0]][pos2[1]] = block_in_pos1
+
+        return;
     
     
+    '''
+    This function return whether the input coordinate contains a cellblock or not (empty).
+    '''
+    def isEmptyPos(self, pos):
+        if(self.grid[pos[0]][pos[1]] == -1):
+            return True
+        return False
+    
+    def simulatedAnnealing(self):
+        
+        T = 10;
+        while(T > 0.1):
+            for x in xrange(0, 100):
+                #Pcik two random blocks
+                pos1 = (random.randrange(0, self.num_rows), random.randrange(0, self.num_cols))
+                pos2 = (random.randrange(0, self.num_rows), random.randrange(0, self.num_cols))
+                self.swap(pos1, pos2)
+                
+                #Cost: needs improvement
+                new_cost = self.totalCost()
+                old_cost = self.cost
+                delta_cost = new_cost - old_cost;
+                if(new_cost <= old_cost):    #If solution is better, accept it
+                    #update cost
+                    self.cost = new_cost
+                else:    #solution is worse
+                    r = random.random()
+#                     print r, math.exp(-delta_cost/T)
+                    if(r < math.exp(-delta_cost/T)): #the probability of taking a wrong move
+                        #Take the move. #update cost
+                        self.cost = new_cost
+                    else:
+                        #Don't take the move. Reverse the swap
+                        self.swap(pos2, pos1)
+            T = T - 0.01
+#         print self.totalCost()
+        return self.totalCost()
     
     '''
     Input File Format
@@ -144,7 +210,7 @@ class Placement:
             netlist.append(temp[1:])    #ignore the first element (python knows how many elements to read per line, by using the .split() function)
     #     print netlist
     
-        #Convert the netlist to celllist
+        #Convert the netlist to blocklist
         blocklist = [set() for _ in xrange(num_cells)]
         for block in range (0, num_cells):
             for net in netlist:
@@ -152,7 +218,7 @@ class Placement:
                     blocklist[block] |= set(net)
     #                 print block, net
                     
-        print blocklist
+#         print blocklist
         return netlist, blocklist, num_rows, num_cols
     # '''
     # To calculate cost of specific block:
