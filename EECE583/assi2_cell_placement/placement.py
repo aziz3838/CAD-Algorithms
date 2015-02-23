@@ -17,7 +17,6 @@ import numpy
 import random
 import sys
 import math
-from test.test_typechecks import Integer
 
 
 class Placement:
@@ -30,7 +29,7 @@ class Placement:
         self.costOfNet = numpy.zeros(len(self.netlist), dtype=object)
         self.location = numpy.empty(len(self.blocklist), dtype=object)
         self.location.fill(-1);
-        self.grid = numpy.empty((self.num_rows, self.num_cols), dtype=Integer)
+        self.grid = numpy.empty((self.num_rows, self.num_cols), dtype=numpy.int32)
         self.grid.fill(-1)   #this is terrible for performance. I don't need to use a negative number  
         #initialize grid with random placement
         for block_num in xrange(0, len(self.blocklist)):
