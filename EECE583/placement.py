@@ -2,13 +2,14 @@
 '''
 initialize(blocklist, num_rows, num_cols):
 to initialize a gird with random placement, create a grid first (using numpy) and fill it with -1. -1 will mean "empty".
-Iterate all blocks in blocklist:
+Iterate all blocks:
     While a placement didn't happen yet:
         pick two random numbers (one for x, one for y)
         if(grid[x][y] is empty):
             place the block
             
-            
+
+TODO: remove blocklist            
 
 '''
 
@@ -16,18 +17,20 @@ import numpy
 import random
 import sys
 import math
+from test.test_typechecks import Integer
 
 
 class Placement:
 
     
     def __init__(self, filename):
-        self.netlist, self.blocklist, self.num_rows, self.num_cols = self.readfile(filename)
+        self.netlist, self.blocklist, self.netsOfBlock, self.num_cells, self.num_rows, self.num_cols = self.readfile(filename)
     
     def initialize(self):
+        self.costOfNet = numpy.zeros(len(self.netlist), dtype=object)
         self.location = numpy.empty(len(self.blocklist), dtype=object)
         self.location.fill(-1);
-        self.grid = numpy.empty((self.num_rows, self.num_cols))
+        self.grid = numpy.empty((self.num_rows, self.num_cols), dtype=Integer)
         self.grid.fill(-1)   #this is terrible for performance. I don't need to use a negative number  
         #initialize grid with random placement
         for block_num in xrange(0, len(self.blocklist)):
@@ -77,13 +80,16 @@ class Placement:
     '''
     To calculate initial total cost:
     Iterate through all NETS:
-        calculate costPerNet, add it to totalCost
+        calculate costPerNet, add it to totalCost. Also, add the cost to the list costOfNet[]
     return totalCost
     '''
     def totalCost(self):
         totalCost = 0
         for net in xrange(0, len(self.netlist)):
-            totalCost += self.costPerNet(self.netlist[net])
+            cost_net = self.costPerNet(self.netlist[net])
+            totalCost += cost_net
+            self.costOfNet[net] = cost_net
+#         print self.costOfNet
         return totalCost
     
     
@@ -132,7 +138,42 @@ class Placement:
         self.grid[pos2[0]][pos2[1]] = block_in_pos1
 
         return;
-    
+    '''
+    First, find related nets, and get their cost from costOfNet[].
+    Update the cost with new cost calculated by calling costPerNet(net)
+    Get deltaCost. return negative if good move, positive if bad.
+    '''
+    def updateCostOfSwap(self, pos1, pos2):
+        #If both positions are empty cells, return 0
+        if(self.isEmptyPos(pos1) and self.isEmptyPos(pos2)):
+#             self.counter = self.counter + 1
+            return 0
+        
+        #Find related nets
+        block_in_pos1 = self.grid[pos1[0]][pos1[1]]
+        block_in_pos2 = self.grid[pos2[0]][pos2[1]]
+        nets1, nets2 = [], []
+        if(not self.isEmptyPos(pos1)):
+            nets1 = self.netsOfBlock[block_in_pos1]
+        if(not self.isEmptyPos(pos2)):
+            nets2 = self.netsOfBlock[block_in_pos2]
+        relatedNets = list(set(nets1 + nets2))
+        
+        #Find cost of related nets from saved list (costOfNet[])
+        oldCostOfRelatedNets = 0
+        for net in relatedNets:
+            oldCostOfRelatedNets += self.costOfNet[net]
+            
+        #update cost of related nets in costOfNet[]
+        newCostOfRelatedNets = 0
+        for net in relatedNets:
+            cost_new = self.costPerNet(self.netlist[net])   #need to pass the whole net costPerNet, not just its number
+            self.costOfNet[net] = cost_new
+            newCostOfRelatedNets += cost_new
+        
+        #deltaCost is negative if good move, positive if bad.
+        deltaCost =  newCostOfRelatedNets - oldCostOfRelatedNets
+        return deltaCost
     
     '''
     This function return whether the input coordinate contains a cellblock or not (empty).
@@ -142,8 +183,7 @@ class Placement:
             return True
         return False
     
-    def simulatedAnnealing(self):
-        
+    def simulatedAnnealing(self):    
         T = 10;
         while(T > 0.1):
             for x in xrange(0, 100):
@@ -171,7 +211,68 @@ class Placement:
             T = T - 0.01
 #         print self.totalCost()
         return self.totalCost()
+ 
+    def simulatedAnnealingIncrementalCost(self):  
+        self.counter = 0
+        plot = []
+        start = 7
+        step = 0.0001
+        T = start;
+        while(T > 0.0001):
+            pickRandomness_row = int(((T/4/step)/(start/step)) * self.num_rows) + 2
+            pickRandomness_col = int(((T/4/step)/(start/step)) * self.num_cols) + 3
+            
+            innerIterations = int((start - T)*1.5 + 4) #more innerIterations at the end
+            for x in xrange(0, innerIterations):
+                #Pick two random blocks
+                pos1, pos2 = self.pickTwoPositions(pickRandomness_row, pickRandomness_col)
+                
+                self.swap(pos1, pos2)
+                delta_cost = self.updateCostOfSwap(pos2, pos1)
+                self.cost += delta_cost
+                #If move is good (negative). Do nothing. Do not reverse the swap.
+                if(delta_cost > 0):    #If solution is worse
+                    r = random.random()
+#                     print r, math.exp(-delta_cost/T)
+                    #The probability of taking a wrong move. If take the move. Do nothing. Do not reverse the swap.
+                    if(r > math.exp(-delta_cost/T)): 
+                        #Don't take the move. Reverse the swap
+                        self.swap(pos2, pos1)
+                        delta_cost = self.updateCostOfSwap(pos1, pos2)
+                        self.cost += delta_cost
+                 
+            T = T - step
+            plot.append(self.cost)
+            
+#         print self.totalCost()
+#         print plot
+#         return self.totalCost() 
+#         print self.counter
+        return self.cost 
     
+    '''
+    Picking positions is random, but it can be optimized by making it less random.
+    Instead of picking positions that can be far from each other, we can limit this by:
+        pos1 is chosen randomly. OR pos1 is a position for a block that we already know (using locate())
+        pos2 is chosen randomly, but limited to a few positions close to pos1
+    '''
+    def pickTwoPositions(self, pickRandomness_row, pickRandomness_col):
+#         pos1 = (random.randrange(0, self.num_rows), random.randrange(0, self.num_cols))
+#         pos2 = (random.randrange(0, self.num_rows), random.randrange(0, self.num_cols))
+        
+        #Picking two positions close to each other
+        pos1 = self.locate(random.randrange(0, self.num_cells))
+        t_pos2 = [0, 0]
+        t_pos2[0] = random.randrange(0, pos1[0]+pickRandomness_row)
+        t_pos2[1] = random.randrange(0, pos1[1]+pickRandomness_col)
+         
+        if(t_pos2[0] >= self.num_rows):
+            t_pos2[0] = self.num_rows - 1  
+        if(t_pos2[1] >= self.num_cols):
+            t_pos2[1] = self.num_cols - 1   
+        pos2 = (t_pos2[0], t_pos2[1])
+        return pos1, pos2
+      
     '''
     Input File Format
     The circuit input format is as follows. The first line contains the number of cells to be placed, the number
@@ -217,9 +318,15 @@ class Placement:
                 if block in net:
                     blocklist[block] |= set(net)
     #                 print block, net
-                    
-#         print blocklist
-        return netlist, blocklist, num_rows, num_cols
+         
+        #Create netsOfBlock: set of all nets related to block
+        netsOfBlock = [[] for _ in xrange(num_cells)]
+        for block in range (0, num_cells):
+            for index, net in enumerate(netlist):
+                if block in net:
+                    netsOfBlock[block].append(index)
+                   
+        return netlist, blocklist, netsOfBlock, num_cells, num_rows, num_cols
     # '''
     # To calculate cost of specific block:
     # Iterate through the blocklist related to the current block(first input):

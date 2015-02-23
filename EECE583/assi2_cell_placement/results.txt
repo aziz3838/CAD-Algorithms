@@ -1,0 +1,459 @@
+simple greedy function (10k iteration per benchmark):
+╔══════════════════╦═══════╗
+║ alu2.txt         ║  2056 ║
+║ apex1.txt        ║ 16479 ║
+║ apex4.txt        ║ 34981 ║
+║ C880.txt         ║  2532 ║
+║ cm138a.txt       ║    49 ║
+║ cm150a.txt       ║    94 ║
+║ cm151a.txt       ║    54 ║
+║ cm162a.txt       ║   110 ║
+║ cps.txt          ║ 16358 ║
+║ e64.txt          ║  4815 ║
+║ paira.txt        ║ 20671 ║
+║ pairb.txt        ║ 36848 ║
+║ Overall Average: ║ 11253 ║
+╚══════════════════╩═══════╝
+
+
+simulatedAnnealingIncrementalCost
+T = 10;
+while(T > 0.1):
+for x in xrange(0, 100):
+T = T - 0.01
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1644 ║
+║ apex1                 ║ 12062 ║
+║ apex4                 ║ 23547 ║
+║ C880                  ║  1895 ║
+║ cm138a                ║    48 ║
+║ cm150a                ║    88 ║
+║ cm151a                ║    51 ║
+║ cm162a                ║   110 ║
+║ cps                   ║ 11575 ║
+║ e64                   ║  3507 ║
+║ paira                 ║ 11604 ║
+║ pairb                 ║ 20474 ║
+║ Overall Average       ║  7217 ║
+║ 169.938999891 seconds ║       ║
+╚═══════════════════════╩═══════╝
+
+simulatedAnnealing (without Incremental cost)
+T = 10;
+while(T > 0.1):
+for x in xrange(0, 100):
+T = T - 0.01
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1639 ║
+║ apex1                 ║ 12099 ║
+║ apex4                 ║ 23985 ║
+║ C880                  ║  1870 ║
+║ cm138a                ║    47 ║
+║ cm150a                ║    92 ║
+║ cm151a                ║    49 ║
+║ cm162a                ║   108 ║
+║ cps                   ║ 11154 ║
+║ e64                   ║  3454 ║
+║ paira                 ║ 12593 ║
+║ pairb                 ║ 20249 ║
+║ Overall Average       ║  7278 ║
+║ 2538.68200016 seconds ║       ║
+╚═══════════════════════╩═══════╝
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+simulatedAnnealingIncrementalCost
+T = 7;
+while(T > 0.1):
+for x in xrange(0, 200):
+T = T - 0.01
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1504 ║
+║ apex1                 ║ 11451 ║
+║ apex4                 ║ 22678 ║
+║ C880                  ║  1625 ║
+║ cm138a                ║    47 ║
+║ cm150a                ║    89 ║
+║ cm151a                ║    50 ║
+║ cm162a                ║   114 ║
+║ cps                   ║ 10522 ║
+║ e64                   ║  3250 ║
+║ paira                 ║ 12587 ║
+║ pairb                 ║ 18031 ║
+║ Overall Average       ║  6829 ║
+║ 381.455000162 seconds ║       ║
+╚═══════════════════════╩═══════╝
+
+
+simulatedAnnealingIncrementalCost
+T = 7;
+while(T > 0.1):
+for x in xrange(0, 50):
+T = T - 0.001
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1369 ║
+║ apex1                 ║ 10060 ║
+║ apex4                 ║ 20112 ║
+║ C880                  ║  1544 ║
+║ cm138a                ║    49 ║
+║ cm150a                ║    91 ║
+║ cm151a                ║    47 ║
+║ cm162a                ║   102 ║
+║ cps                   ║  9406 ║
+║ e64                   ║  2911 ║
+║ paira                 ║  8133 ║
+║ pairb                 ║ 15161 ║
+║ Overall Average       ║  5748 ║
+║ 582.883000135 seconds ║       ║
+╚═══════════════════════╩═══════╝
+
+simulatedAnnealingIncrementalCost
+T = 7;
+while(T > 0.01):
+for x in xrange(0, 20):
+T = T - 0.0003
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1300 ║
+║ 54.7620000839 seconds ║       ║
+║ apex1                 ║  9416 ║
+║ 110.284999847 seconds ║       ║
+║ apex4                 ║ 19630 ║
+║ 215.343000174 seconds ║       ║
+║ C880                  ║  1539 ║
+║ 56.2179999352 seconds ║       ║
+║ cm138a                ║    48 ║
+║ 24.6600000858 seconds ║       ║
+║ cm150a                ║    92 ║
+║ 31.0549998283 seconds ║       ║
+║ cm151a                ║    47 ║
+║ 16.3500001431 seconds ║       ║
+║ cm162a                ║   101 ║
+║ 27.4309999943 seconds ║       ║
+║ cps                   ║  8853 ║
+║ 153.139999866 seconds ║       ║
+║ e64                   ║  2866 ║
+║ 56.4199998379 seconds ║       ║
+║ paira                 ║  7832 ║
+║ 57.8900001049 seconds ║       ║
+║ pairb                 ║ 13159 ║
+║ 25.6599998474 seconds ║       ║
+║ Overall Average       ║  5406 ║
+║ 829.21600008 seconds  ║       ║
+╚═══════════════════════╩═══════╝
+
+
+
+
+
+
+
+simulatedAnnealingIncrementalCost
+pickRandomness_row = int(((T/0.001)/(7/0.001)) * self.num_rows) + 1
+pickRandomness_col = int(((T/0.001)/(7/0.001)) * self.num_cols) + 1
+pickTowPositions()
+T = 7;
+while(T > 0.1):
+for x in xrange(0, 50):
+T = T - 0.001
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1315 ║
+║ 52.6440000534 seconds ║       ║
+║ apex1                 ║  9449 ║
+║ 78.9329998493 seconds ║       ║
+║ apex4                 ║ 19106 ║
+║ 156.982000113 seconds ║       ║
+║ C880                  ║  1486 ║
+║ 37.5829999447 seconds ║       ║
+║ cm138a                ║    49 ║
+║ 20.8090000153 seconds ║       ║
+║ cm150a                ║    92 ║
+║ 23.8510000706 seconds ║       ║
+║ cm151a                ║    49 ║
+║ 13.6579999924 seconds ║       ║
+║ cm162a                ║   106 ║
+║ 21.9079999924 seconds ║       ║
+║ cps                   ║  8804 ║
+║ 139.41899991 seconds  ║       ║
+║ e64                   ║  2813 ║
+║ 47.5250000954 seconds ║       ║
+║ paira                 ║  8844 ║
+║ 49.0999999046 seconds ║       ║
+║ pairb                 ║ 13637 ║
+║ 22.6689999104 seconds ║       ║
+║ Overall Average       ║  5479 ║
+║ 665.082000017 seconds ║       ║
+╚═══════════════════════╩═══════╝
+
+
+simulatedAnnealingIncrementalCost
+pickRandomness_row = int(((T/2/0.001)/(7/0.001)) * self.num_rows) + 1
+pickRandomness_col = int(((T/2/0.001)/(7/0.001)) * self.num_cols) + 1
+pickTowPositions()
+T = 7;
+while(T > 0.1):
+for x in xrange(0, 50):
+T = T - 0.001
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1317 ║
+║ 58.4179999828 seconds ║       ║
+║ apex1                 ║  9357 ║
+║ 104.959000111 seconds ║       ║
+║ apex4                 ║ 18471 ║
+║ 177.385999918 seconds ║       ║
+║ C880                  ║  1544 ║
+║ 35.9430000782 seconds ║       ║
+║ cm138a                ║    48 ║
+║ 19.8599998951 seconds ║       ║
+║ cm150a                ║    91 ║
+║ 21.3199999332 seconds ║       ║
+║ cm151a                ║    46 ║
+║ 12.6970000267 seconds ║       ║
+║ cm162a                ║   104 ║
+║ 19.6679999828 seconds ║       ║
+║ cps                   ║  8423 ║
+║ 118.975000143 seconds ║       ║
+║ e64                   ║  2784 ║
+║ 45.5290000439 seconds ║       ║
+║ paira                 ║  8683 ║
+║ 42.9839999676 seconds ║       ║
+║ pairb                 ║ 12245 ║
+║ 20.0810000896 seconds ║       ║
+║ Overall Average       ║  5259 ║
+║ 677.822000027 seconds ║       ║
+╚═══════════════════════╩═══════╝
+
+
+
+simulatedAnnealingIncrementalCost
+pickRandomness_row = int(((T/2/0.001)/(7/0.001)) * self.num_rows) + 1
+pickRandomness_col = int(((T/2/0.001)/(7/0.001)) * self.num_cols) + 1
+fixed pickTowPositions()
+T = 7;
+while(T > 0.001):
+for x in xrange(0, 50):
+T = T - 0.001
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1298 ║
+║ 63.0180001259 seconds ║       ║
+║ apex1                 ║  9361 ║
+║ 94.1050000191 seconds ║       ║
+║ apex4                 ║ 18030 ║
+║ 199.210000038 seconds ║       ║
+║ C880                  ║  1500 ║
+║ 41.8599998951 seconds ║       ║
+║ cm138a                ║    51 ║
+║ 21.4400000572 seconds ║       ║
+║ cm150a                ║    93 ║
+║ 23.125 seconds        ║       ║
+║ cm151a                ║    55 ║
+║ 18.2459998131 seconds ║       ║
+║ cm162a                ║   109 ║
+║ 22.128000021 seconds  ║       ║
+║ cps                   ║  8236 ║
+║ 148.381000042 seconds ║       ║
+║ e64                   ║  2753 ║
+║ 40.8659999371 seconds ║       ║
+║ paira                 ║  7542 ║
+║ 48.0870001316 seconds ║       ║
+║ pairb                 ║  9599 ║
+║ 37.5640001297 seconds ║       ║
+║ Overall Average       ║  4885 ║
+║ 758.032000065 seconds ║       ║
+╚═══════════════════════╩═══════╝
+
+
+simulatedAnnealingIncrementalCost
+start = 7
+step = 0.0001
+pickRandomness_row = int(((T/2/step)/(start/step)) * self.num_rows) + 1
+pickRandomness_col = int(((T/2/step)/(start/step)) * self.num_cols) + 1
+fixed pickTowPositions()
+while(T > 0.0001):
+innerIterations = int((start - T)*1.5 + 2) #more innerIterations at the end
+for x in xrange(0, innerIterations):
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1212 ║
+║ 85.1859998703 seconds ║       ║
+║ apex1                 ║  8684 ║
+║ 102.713000059 seconds ║       ║
+║ apex4                 ║ 17403 ║
+║ 221.34100008 seconds  ║       ║
+║ C880                  ║  1443 ║
+║ 54.1009998322 seconds ║       ║
+║ cm138a                ║    48 ║
+║ 27.3990001678 seconds ║       ║
+║ cm150a                ║    90 ║
+║ 28.7109999657 seconds ║       ║
+║ cm151a                ║    53 ║
+║ 24.0299999714 seconds ║       ║
+║ cm162a                ║   108 ║
+║ 29.2669999599 seconds ║       ║
+║ cps                   ║  7711 ║
+║ 191.701999903 seconds ║       ║
+║ e64                   ║  2701 ║
+║ 51.4100000858 seconds ║       ║
+║ paira                 ║  7514 ║
+║ 57.7200000286 seconds ║       ║
+║ pairb                 ║  8777 ║
+║ 44.0850000381 seconds ║       ║
+║ Overall Average       ║  4645 ║
+║ 917.66899991 seconds  ║       ║
+╚═══════════════════════╩═══════╝
+
+
+
+simulatedAnnealingIncrementalCost
+start = 7
+step = 0.0001
+pickRandomness_row = int(((T/3/step)/(start/step)) * self.num_rows) + 1
+pickRandomness_col = int(((T/3/step)/(start/step)) * self.num_cols) + 1
+fixed pickTowPositions()
+while(T > 0.0001):
+innerIterations = int((start - T)*1.5 + 2) #more innerIterations at the end
+for x in xrange(0, innerIterations):
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1277 ║
+║ 79.7869999409 seconds ║       ║
+║ apex1                 ║  9144 ║
+║ 98.8519999981 seconds ║       ║
+║ apex4                 ║ 18114 ║
+║ 193.06400013 seconds  ║       ║
+║ C880                  ║  1479 ║
+║ 46.7449998856 seconds ║       ║
+║ cm138a                ║    50 ║
+║ 24.3240001202 seconds ║       ║
+║ cm150a                ║    86 ║
+║ 25.2769999504 seconds ║       ║
+║ cm151a                ║    51 ║
+║ 21.4809999466 seconds ║       ║
+║ cm162a                ║   108 ║
+║ 26.8819999695 seconds ║       ║
+║ cps                   ║  8006 ║
+║ 183.370000124 seconds ║       ║
+║ e64                   ║  2697 ║
+║ 49.7269999981 seconds ║       ║
+║ paira                 ║  6662 ║
+║ 59.0360000134 seconds ║       ║
+║ pairb                 ║  7753 ║
+║ 47.0209999084 seconds ║       ║
+║ Overall Average       ║  4618 ║
+║ 855.580000162 seconds ║       ║
+╚═══════════════════════╩═══════╝
+
+simulatedAnnealingIncrementalCost
+start = 7
+step = 0.0001
+pickRandomness_row = int(((T/4/step)/(start/step)) * self.num_rows) + 2
+pickRandomness_col = int(((T/4/step)/(start/step)) * self.num_cols) + 3
+fixed pickTowPositions()
+while(T > 0.0001):
+innerIterations = int((start - T)*1.5 + 2) #more innerIterations at the end
+for x in xrange(0, innerIterations):
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1193 ║
+║ 80.6380000114 seconds ║       ║
+║ apex1                 ║  9145 ║
+║ 95.0309998989 seconds ║       ║
+║ apex4                 ║ 17362 ║
+║ 207.40199995 seconds  ║       ║
+║ C880                  ║  1411 ║
+║ 60.375 seconds        ║       ║
+║ cm138a                ║    50 ║
+║ 34.5080001354 seconds ║       ║
+║ cm150a                ║    87 ║
+║ 36.5580000877 seconds ║       ║
+║ cm151a                ║    45 ║
+║ 30.2189998627 seconds ║       ║
+║ cm162a                ║   103 ║
+║ 37.7829999924 seconds ║       ║
+║ cps                   ║  7975 ║
+║ 227.858999968 seconds ║       ║
+║ e64                   ║  2647 ║
+║ 63.4570000172 seconds ║       ║
+║ paira                 ║  6696 ║
+║ 76.756000042 seconds  ║       ║
+║ pairb                 ║  7862 ║
+║ 66.7290000916 seconds ║       ║
+║ Overall Average       ║  4548 ║
+║ 1017.31800008 seconds ║       ║
+╚═══════════════════════╩═══════╝
+
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1217 ║
+║ 85.4079999924 seconds ║       ║
+║ apex1                 ║  8890 ║
+║ 117.922999859 seconds ║       ║
+║ apex4                 ║ 17260 ║
+║ 216.424000025 seconds ║       ║
+║ C880                  ║  1429 ║
+║ 41.6840000153 seconds ║       ║
+║ cm138a                ║    47 ║
+║ 22.7730000019 seconds ║       ║
+║ cm150a                ║    87 ║
+║ 23.371999979 seconds  ║       ║
+║ cm151a                ║    47 ║
+║ 18.8310000896 seconds ║       ║
+║ cm162a                ║   103 ║
+║ 22.9300000668 seconds ║       ║
+║ cps                   ║  7901 ║
+║ 153.69299984 seconds  ║       ║
+║ e64                   ║  2671 ║
+║ 45.6730000973 seconds ║       ║
+║ paira                 ║  7065 ║
+║ 52.1779999733 seconds ║       ║
+║ pairb                 ║  7521 ║
+║ 47.0590000153 seconds ║       ║
+║ Overall Average       ║  4519 ║
+║ 847.951999903 seconds ║       ║
+╚═══════════════════════╩═══════╝
+
+
+
+simulatedAnnealingIncrementalCost
+start = 7
+step = 0.0001
+pickRandomness_row = int(((T/4/step)/(start/step)) * self.num_rows) + 2
+pickRandomness_col = int(((T/4/step)/(start/step)) * self.num_cols) + 3
+fixed pickTowPositions()
+while(T > 0.0001):
+innerIterations = int((start - T)*1.5 + 4) #more innerIterations at the end
+for x in xrange(0, innerIterations):
+╔═══════════════════════╦═══════╗
+║ alu2                  ║  1204 ║
+║ 105.347000122 seconds ║       ║
+║ apex1                 ║  8659 ║
+║ 122.29399991 seconds  ║       ║
+║ apex4                 ║ 17374 ║
+║ 260.381999969 seconds ║       ║
+║ C880                  ║  1431 ║
+║ 60.2170000076 seconds ║       ║
+║ cm138a                ║    47 ║
+║ 30.8110001087 seconds ║       ║
+║ cm150a                ║    88 ║
+║ 31.2990000248 seconds ║       ║
+║ cm151a                ║    46 ║
+║ 25.0309998989 seconds ║       ║
+║ cm162a                ║   103 ║
+║ 29.1419999599 seconds ║       ║
+║ cps                   ║  7577 ║
+║ 193.299000025 seconds ║       ║
+║ e64                   ║  2562 ║
+║ 56.1089999676 seconds ║       ║
+║ paira                 ║  7214 ║
+║ 65.5570001602 seconds ║       ║
+║ pairb                 ║  7267 ║
+║ 58.9539999962 seconds ║       ║
+║ Overall Average       ║  4464 ║
+║ 1038.4460001 seconds  ║       ║
+╚═══════════════════════╩═══════╝
