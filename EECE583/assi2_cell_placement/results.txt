@@ -430,30 +430,31 @@ while(T > 0.0001):
 innerIterations = int((start - T)*1.5 + 4) #more innerIterations at the end
 for x in xrange(0, innerIterations):
 ╔═══════════════════════╦═══════╗
-║ alu2                  ║  1204 ║
+║ Benchmark             ║ Cost  ║
+║ alu2                  ║ 1204  ║
 ║ 105.347000122 seconds ║       ║
-║ apex1                 ║  8659 ║
+║ apex1                 ║ 8659  ║
 ║ 122.29399991 seconds  ║       ║
 ║ apex4                 ║ 17374 ║
 ║ 260.381999969 seconds ║       ║
-║ C880                  ║  1431 ║
+║ C880                  ║ 1431  ║
 ║ 60.2170000076 seconds ║       ║
-║ cm138a                ║    47 ║
+║ cm138a                ║ 47    ║
 ║ 30.8110001087 seconds ║       ║
-║ cm150a                ║    88 ║
+║ cm150a                ║ 88    ║
 ║ 31.2990000248 seconds ║       ║
-║ cm151a                ║    46 ║
+║ cm151a                ║ 46    ║
 ║ 25.0309998989 seconds ║       ║
-║ cm162a                ║   103 ║
+║ cm162a                ║ 103   ║
 ║ 29.1419999599 seconds ║       ║
-║ cps                   ║  7577 ║
+║ cps                   ║ 7577  ║
 ║ 193.299000025 seconds ║       ║
-║ e64                   ║  2562 ║
+║ e64                   ║ 2562  ║
 ║ 56.1089999676 seconds ║       ║
-║ paira                 ║  7214 ║
+║ paira                 ║ 7214  ║
 ║ 65.5570001602 seconds ║       ║
-║ pairb                 ║  7267 ║
+║ pairb                 ║ 7267  ║
 ║ 58.9539999962 seconds ║       ║
-║ Overall Average       ║  4464 ║
+║ Overall Average       ║ 4464  ║
 ║ 1038.4460001 seconds  ║       ║
 ╚═══════════════════════╩═══════╝

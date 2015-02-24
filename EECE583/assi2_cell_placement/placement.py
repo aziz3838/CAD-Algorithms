@@ -17,14 +17,19 @@ import numpy
 import random
 import sys
 import math
-
+import plotting
+from os import listdir, path
 
 class Placement:
 
     
     def __init__(self, filename):
+        self.filename = filename
         self.netlist, self.blocklist, self.netsOfBlock, self.num_cells, self.num_rows, self.num_cols = self.readfile(filename)
     
+    '''
+    Initialization: created empty numpy arrays. Initialize grid with random placement
+    '''
     def initialize(self):
         self.costOfNet = numpy.zeros(len(self.netlist), dtype=object)
         self.location = numpy.empty(len(self.blocklist), dtype=object)
@@ -40,12 +45,9 @@ class Placement:
                 if(self.grid[row][col] == -1):
                     self.place(block_num, row, col)
                     placed = True
-        
-#         print self.grid
-#         print self.location
+    
         self.cost = self.totalCost()
-#         print self.totalCost()
-        return 0
+        return
     
     
     
@@ -92,8 +94,6 @@ class Placement:
         return totalCost
     
     
-    def incrementalCost(self):
-        return 0
     
     '''
     locate(x, y):
@@ -182,37 +182,42 @@ class Placement:
             return True
         return False
     
-    def simulatedAnnealing(self):    
-        T = 10;
-        while(T > 0.1):
-            for x in xrange(0, 100):
-                #Pcik two random blocks
-                pos1 = (random.randrange(0, self.num_rows), random.randrange(0, self.num_cols))
-                pos2 = (random.randrange(0, self.num_rows), random.randrange(0, self.num_cols))
-                self.swap(pos1, pos2)
-                
-                #Cost: needs improvement
-                new_cost = self.totalCost()
-                old_cost = self.cost
-                delta_cost = new_cost - old_cost;
-                if(new_cost <= old_cost):    #If solution is better, accept it
-                    #update cost
-                    self.cost = new_cost
-                else:    #solution is worse
-                    r = random.random()
-#                     print r, math.exp(-delta_cost/T)
-                    if(r < math.exp(-delta_cost/T)): #the probability of taking a wrong move
-                        #Take the move. #update cost
-                        self.cost = new_cost
-                    else:
-                        #Don't take the move. Reverse the swap
-                        self.swap(pos2, pos1)
-            T = T - 0.01
-#         print self.totalCost()
-        return self.totalCost()
+#     def simulatedAnnealing(self):    
+#         T = 10;
+#         while(T > 0.1):
+#             for x in xrange(0, 100):
+#                 #Pcik two random blocks
+#                 pos1 = (random.randrange(0, self.num_rows), random.randrange(0, self.num_cols))
+#                 pos2 = (random.randrange(0, self.num_rows), random.randrange(0, self.num_cols))
+#                 self.swap(pos1, pos2)
+#                 
+#                 #Cost: needs improvement
+#                 new_cost = self.totalCost()
+#                 old_cost = self.cost
+#                 delta_cost = new_cost - old_cost;
+#                 if(new_cost <= old_cost):    #If solution is better, accept it
+#                     #update cost
+#                     self.cost = new_cost
+#                 else:    #solution is worse
+#                     r = random.random()
+# #                     print r, math.exp(-delta_cost/T)
+#                     if(r < math.exp(-delta_cost/T)): #the probability of taking a wrong move
+#                         #Take the move. #update cost
+#                         self.cost = new_cost
+#                     else:
+#                         #Don't take the move. Reverse the swap
+#                         self.swap(pos2, pos1)
+#             T = T - 0.01
+# #         print self.totalCost()
+#         return self.totalCost()
  
+    '''
+    Simulated Annealing Algorithm.
+    '''
     def simulatedAnnealingIncrementalCost(self):  
-        self.counter = 0
+        #Initialize Graph
+#         hl = plotting.graph(path.splitext(path.basename(self.filename))[0])
+        
         plot = []
         start = 7
         step = 0.0001
@@ -242,12 +247,8 @@ class Placement:
                  
             T = T - step
             plot.append(self.cost)
-            
-#         print self.totalCost()
-#         print plot
-#         return self.totalCost() 
-#         print self.counter
-        return self.cost 
+        
+        return self.cost , plot
     
     '''
     Picking positions is random, but it can be optimized by making it less random.
@@ -326,27 +327,4 @@ class Placement:
                     netsOfBlock[block].append(index)
                    
         return netlist, blocklist, netsOfBlock, num_cells, num_rows, num_cols
-    # '''
-    # To calculate cost of specific block:
-    # Iterate through the blocklist related to the current block(first input):
-    #     locate the block (x &y, using the locate function)
-    #     find max x & y, min x & y
-    # Cost per row (y) is double the columns (x)
-    # '''
-    # def costPerBlock(blocklist):
-    #     max_x, max_y, min_x, min_y =  0, 0, sys.maxint, sys.maxint
-    #     for block in blocklist:
-    #         y, x = locate(block)    #y is row, x is col
-    #         if(x > max_x):
-    #             max_x = x
-    #         if(y > max_y):
-    #             max_y = y
-    #         if(x < min_x):
-    #             min_x = x
-    #         if(y < min_y):
-    #             min_y = y
-    #             
-    #     half_perim_cost = ((max_y - min_y)*2) + (max_x - min_x)
-    # #     print min_x, min_y, max_x, max_y
-    #     print half_perim_cost
-    #     return half_perim_cost 
+
