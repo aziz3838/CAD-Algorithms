@@ -35,15 +35,15 @@ class Partition:
     partA and Part are lists of block NUMBERS
     '''
     def initialize(self):
-#         self.costOfNet = numpy.zeros(len(self.netlist), dtype=object)
-#         self.location = numpy.empty(len(self.blocklist), dtype=object)
-#         self.location.fill(-1);
-#         self.grid = numpy.empty((self.num_rows, self.num_cols), dtype=numpy.int32)
-#         self.grid.fill(-1)   #this is terrible for performance. I don't need to use a negative number  
+        self.gainOfBlock = numpy.zeros(len(self.blocklist), dtype=object)
         
         #The partitions are lists of block NUMBERS
         self.partA = []
         self.partB = []
+        
+        #The following partitions are SETS of UNLOCKED block NUMBERS
+        self.partAUnlocked = set()
+        self.partBUnlocked = set()
 
         turn = 0;
         #Create list of consecutive numbers
@@ -59,15 +59,24 @@ class Partition:
                 self.partB.append(blocknumbers[i])
                 turn = 0;
     
-#         print self.partA
-#         print self.partB
-        
-#         print self.totalCost()
-#         print self.blocklist
-        self.totalGain()
+        self. unlockAllBlocks();
+
+
+        self.calcGainOfBlocks()
+        print self.gainOfBlock
+        print self.partA
+        print self.partAUnlocked
         return
     
-    
+    '''
+    This function simply unlocks all blocks, by creating partAUnlocked & partBUnlocked from partA & partB
+    '''
+    def unlockAllBlocks(self):
+        for blockNumber in self.partA:
+            self.partAUnlocked.add(blockNumber)
+        for blockNumber in self.partB:
+            self.partBUnlocked.add(blockNumber)
+        return    
     '''
     The cost function sums the cost of all nets (using costPerNet in a loop)
     Iterate through all NETS:
@@ -122,19 +131,52 @@ class Partition:
         for relatedBlock in self.blocklist[block]:
             if (inPartA and relatedBlock in self.partB) or (inPartB and relatedBlock in self.partA):
                 gain = gain + 1
-        print gain
+#         print gain
         return gain
     
-    
+    '''
+    To calculate total gain:
+    Iterate through all blocks in blocklist:
+        calculate gainPerBlock, add it to totalgain.
+    return totalCost
+    '''   
     def totalGain(self):
-        gain = 0
+        totalGain = 0
         for blockIndex in xrange(0, len(self.blocklist)):
-            gain = gain + self.gainPerBlock(blockIndex)
-        print gain
-        return gain
+            totalGain = totalGain + self.gainPerBlock(blockIndex)
+        print totalGain
+        return totalGain
     
+    
+    '''
+    Calculate gain of blocks:
+    Iterate through all blocks in blocklist:
+        calculate gainPerBlock, add it to gainOfBlock[blockIndex].
+    '''   
+    def calcGainOfBlocks(self):
+        for blockIndex in xrange(0, len(self.blocklist)):
+            self.gainOfBlock[blockIndex] = self.gainPerBlock(blockIndex)
+        return 
 
- 
+
+    '''
+    TODO
+    Calculate gain of unlocked blocks (for efficiency):
+    Iterate through all UNLOCKED blocks in blocklist:
+        calculate gainPerBlock, add it to gainOfBlock[blockIndex].
+    '''   
+    def calcGainOfUnlockedBlocks(self):
+        return
+    
+    
+    '''
+    This function returns the BLOCK INDEX of the highest gain of among unlocked blocks, in the input partition
+    Implementation:
+        call totalGain
+    '''
+    def highestGainOfUnlockedBlocks(self, partition):
+        
+        return 0
       
     '''
     Input File Format
