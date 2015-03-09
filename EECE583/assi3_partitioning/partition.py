@@ -26,7 +26,7 @@ class Partition:
     def __init__(self, filename):
         self.filename = filename
         self.netlist, self.blocklist, self.netsOfBlock, self.num_cells, self.num_rows, self.num_cols = self.readfile(filename)
-        self.initialize()
+#         self.initialize()
     
     '''
     Initialization: create two lists: partA, partB. 
@@ -36,6 +36,7 @@ class Partition:
     '''
     def initialize(self):
         self.gainOfBlock = numpy.zeros(len(self.blocklist), dtype=object)
+        self.location = numpy.empty(len(self.blocklist), dtype=object)
         
         #The partitions are lists of block NUMBERS
         self.partA = []
@@ -44,6 +45,10 @@ class Partition:
         #The following partitions are SETS of UNLOCKED block NUMBERS
         self.partAUnlocked = set()
         self.partBUnlocked = set()
+        
+        #The following partitions are SETS of LOCKED block NUMBERS
+        self.partALocked = set()
+        self.partBLocked = set()
 
         turn = 0;
         #Create list of consecutive numbers
@@ -54,83 +59,138 @@ class Partition:
         for i in xrange(0, self.num_cells):
             if(turn == 0):
                 self.partA.append(blocknumbers[i])
+                self.location[blocknumbers[i]] = 0
                 turn = 1;
             else:
                 self.partB.append(blocknumbers[i])
+                self.location[blocknumbers[i]] = 1
                 turn = 0;
     
-        self. unlockAllBlocks();
+        self.unlockAllBlocks();
 
+#         print self.location
 
-        self.calcGainOfBlocks()
-        print self.gainOfBlock
-        print self.partA
-        print self.partAUnlocked
+#         print self.gainOfBlock
+#         print self.partA
+#         print self.partAUnlocked
         return
+    
+    '''
+    locate in which partition the blockIndex is. 0 for A, 1 for B
+    '''
+    def locate(self, block):
+        return self.location[block]
     
     '''
     This function simply unlocks all blocks, by creating partAUnlocked & partBUnlocked from partA & partB
     '''
     def unlockAllBlocks(self):
-        for blockNumber in self.partA:
-            self.partAUnlocked.add(blockNumber)
-        for blockNumber in self.partB:
-            self.partBUnlocked.add(blockNumber)
+        #Delete all elements in sets
+        self.partAUnlocked.clear()
+        self.partBUnlocked.clear()
+        #Populate sets
+        self.partAUnlocked = set(self.partA)
+        self.partBUnlocked = set(self.partB)
         return    
+    
     '''
     The cost function sums the cost of all nets (using costPerNet in a loop)
     Iterate through all NETS:
         calculate costPerNet, add it to totalCost.
     return totalCost
+    This function goes through partA & partB. It doesn't capture the changes.
+    To calculate cost after performing the partition passes, use finalTotalCost()
     '''
+    def initialTotalCost(self):
+        totalCost = 0
+        for net in xrange(0, len(self.netlist)):
+            cost_net = self.initialCostPerNet(self.netlist[net])
+            totalCost += cost_net
+#             self.costOfNet[net] = cost_net #add this later if incrementalCost is needed
+#             print cost_net
+        return totalCost
+    
     def totalCost(self):
         totalCost = 0
         for net in xrange(0, len(self.netlist)):
             cost_net = self.costPerNet(self.netlist[net])
             totalCost += cost_net
 #             self.costOfNet[net] = cost_net #add this later if incrementalCost is needed
-            print cost_net
-        return totalCost
-    
+#             print cost_net
+        return totalCost    
     '''
     To calculate cost of specific NET:
     The inputs is the whole net, not just the index
     If all blocks related to this net is in one partition, cost of this net is zero. Otherwise, it's one.
     '''
-    def costPerNet(self, net):
+    def initialCostPerNet(self, net):
         inPartA, inPartB = False, False
         for block in net:
-            if block in self.partA:
+            if self.locate(block) == 0:
                 inPartA = True
-            if block in self.partB:
+            if self.locate(block) == 1:
                 inPartB = True
             if(inPartA and inPartB):
                 return 1
         return 0
     
+    def costPerNet(self, net):
+        inPartA, inPartB = False, False
+        for block in net:
+            if self.locate(block) == 0: #if block in partitionA
+                inPartA = True
+            if self.locate(block) == 1: #if block in partitionB
+                inPartB = True
+            if(inPartA and inPartB):
+                return 1
+        return 0
+    
+#     '''
+#     The gainPerBlock function is defined as the improvement in cut-set size (totalCost) if this block is
+#         swapped to the opposite partition.
+#     The input is a block INDEX
+#     Implementation: 
+#                     locate whether the block is in partA or partB
+#                     Iterate through relatedBlocks
+#                         for each related block, find out whether they are in a DIFFERENT partition to the main block
+#                             if different: gain = gain + 1
+#     '''
+#     def gainPerBlock(self, block):
+#         #Locate where the block is (which partition)
+#         inPartA, inPartB = False, False
+#         if block in self.partALocked.union(self.partAUnlocked):
+#             inPartA = True
+#         if block in self.partBLocked.union(self.partBUnlocked):
+#             inPartB = True
+#             
+# 
+#         #Find whether relatedblocks are in same partition
+#         gain = 0
+#         for relatedBlock in self.blocklist[block]:
+#             if (inPartA and relatedBlock in self.partBLocked.union(self.partBUnlocked)) or (inPartB and relatedBlock in self.partALocked.union(self.partAUnlocked)):
+#                 gain = gain + 1
+# #         print gain
+#         return gain
+    
     '''
-    The gainPerBlock function is defined as the improvement in cut-set size (totalGain) if this block is
-        swapped to the opposite partition.
-    The input is a block INDEX
-    Implementation: find block in blocklist[].
-                    locate whether the block is in partA or partB
-                    Iterate through relatedBlocks
-                        for each related block, find out whether they are in a DIFFERENT partition to the main block
-                            if different: gain = gain + 1
+
     '''
     def gainPerBlock(self, block):
         #Locate where the block is (which partition)
         inPartA, inPartB = False, False
-        if block in self.partA:
+        if self.locate(block) == 0: #if block in partitionA
             inPartA = True
-        if block in self.partB:
+        if self.locate(block) == 1: #if block in partitionB
             inPartB = True
+            
 
         #Find whether relatedblocks are in same partition
         gain = 0
         for relatedBlock in self.blocklist[block]:
-            if (inPartA and relatedBlock in self.partB) or (inPartB and relatedBlock in self.partA):
+            if (inPartA and self.locate(relatedBlock) == 1) or (inPartB and self.locate(relatedBlock) == 0):
                 gain = gain + 1
+            else:
+                gain = gain - 1
 #         print gain
         return gain
     
@@ -140,11 +200,11 @@ class Partition:
         calculate gainPerBlock, add it to totalgain.
     return totalCost
     '''   
-    def totalGain(self):
+    def calcTotalGain(self):
         totalGain = 0
         for blockIndex in xrange(0, len(self.blocklist)):
             totalGain = totalGain + self.gainPerBlock(blockIndex)
-        print totalGain
+#         print totalGain
         return totalGain
     
     
@@ -161,23 +221,86 @@ class Partition:
 
     '''
     TODO
-    Calculate gain of unlocked blocks (for efficiency):
-    Iterate through all UNLOCKED blocks in blocklist:
-        calculate gainPerBlock, add it to gainOfBlock[blockIndex].
+    input: blockIndex
     '''   
-    def calcGainOfUnlockedBlocks(self):
+    def updateGainOfRelatedBlocks(self, block):
+        relatedBlocks = self.blocklist[block]
+        for blockIndex in relatedBlocks:
+            self.gainOfBlock[blockIndex] = self.gainPerBlock(blockIndex)
         return
     
     
     '''
     This function returns the BLOCK INDEX of the highest gain of among unlocked blocks, in the input partition
     Implementation:
-        call totalGain
+        Iterate through unlockedlocks in a specific partition. 
+        Using block index, find block that corresponds to maximum gain (&store index), by using costOfBlock[index]
     '''
-    def highestGainOfUnlockedBlocks(self, partition):
-        
-        return 0
-      
+    def getBlockOfHighestGainOfUnlockedBlocks(self, partition):
+        max = -sys.maxint - 1
+        index = 0
+        if partition == "A":
+            for blockIndex in self.partAUnlocked:       #The values in partA & partB are just blocks' indices
+                if max < self.gainOfBlock[blockIndex]:
+                    max = self.gainOfBlock[blockIndex]
+                    index = blockIndex
+        if partition == "B":
+            for blockIndex in self.partBUnlocked:
+                if max < self.gainOfBlock[blockIndex]:
+                    max = self.gainOfBlock[blockIndex]
+                    index = blockIndex
+#         print "gain: " + str(max)
+        return index
+    
+    '''
+    This function removes the input block from partAUnlocked or partBUnlocked SETS,
+    and it moves the block to the other partition (in the LOCKED set)
+    No need to specify whether the block is in partA or partB. The code will find it
+    '''
+    def moveBlockAndLock(self, blockIndex):
+        if self.locate(blockIndex) == 0: #if block in partitionA
+            self.partAUnlocked.remove(blockIndex)
+            self.partBLocked.add(blockIndex)
+            self.location[blockIndex] = 1;  #move to partitionB
+        else:                            #if block in partitionB
+            self.partBUnlocked.remove(blockIndex)
+            self.partALocked.add(blockIndex)
+            self.location[blockIndex] = 0;  #move to partitionA
+        return
+    
+    '''
+    Start with partition A, because it has either the same number of elements in B, or higher by 1
+    randomize
+    '''
+    def partition(self):
+        for passes in xrange(0, 6):
+            self.initialize()
+            print "initial Cost: " + str(self.initialTotalCost())
+            turn = 0
+#             print self.partA
+#             print self.partB
+            self.calcGainOfBlocks()
+            best_cost = sys.maxint
+            while(self.partAUnlocked or self.partBUnlocked):   #if either set is NOT empty
+                
+                if turn == 0:
+                    blockIndex = self.getBlockOfHighestGainOfUnlockedBlocks("A")
+#                     print "index in A: " + str(blockIndex)
+                    turn = 1
+                else:
+                    blockIndex = self.getBlockOfHighestGainOfUnlockedBlocks("B")
+                    turn = 0
+#                     print "index in B: " + str(blockIndex)
+                self.moveBlockAndLock(blockIndex)
+                self.updateGainOfRelatedBlocks(blockIndex)
+#                 print "totalCost: " + str(self.totalCost())
+
+                temp_cost = self.totalCost()
+                if best_cost > temp_cost:
+                    best_cost = temp_cost
+            
+        print "Best Cost: " + str(best_cost)    
+        return best_cost
     '''
     Input File Format
     The circuit input format is as follows. The first line contains the number of cells to be placed, the number

@@ -39,9 +39,9 @@ def measurePerformance():
 
 def measurePerformanceOneBench():
     start_time = time.time()
-    A = Partition('benchmarks/alu2.txt')
-#     localCost = A.simulatedAnnealingIncrementalCost()
-#     print "Cost\t", localCost
+    A = Partition('benchmarks/paira.txt')
+    localCost = A.partition()
+    print "Cost\t", localCost
     print("%s seconds" % (time.time() - start_time))
 
 
