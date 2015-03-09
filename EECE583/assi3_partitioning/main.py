@@ -10,7 +10,13 @@ from os import listdir, path
 import time
 
 def main(): 
+    start_time = time.time()    
+
+#     measurePerformance();
     measurePerformanceOneBench();
+
+    print("%s seconds" % (time.time() - start_time))
+
 
 
 '''
@@ -25,13 +31,14 @@ def measurePerformance():
         start_time = time.time()
         A = Partition('benchmarks/' + bench)
 #         localCost = A.simulatedAnnealing()
-        localCost, plot = A.simulatedAnnealingIncrementalCost()
+#         localCost, plot = A.partition()
+        localCost = A.partition()
         print path.splitext(path.basename(bench))[0], "\t", localCost
         totalCost += localCost
         print("%s seconds" % (time.time() - start_time))
         
         #graph
-        plotting.plot(path.splitext(path.basename(bench))[0], plot)
+#         plotting.plot(path.splitext(path.basename(bench))[0], plot)
     
     print "Overall Average\t", totalCost/len(benchmarks) 
 
@@ -40,9 +47,11 @@ def measurePerformance():
 def measurePerformanceOneBench():
     start_time = time.time()
     A = Partition('benchmarks/paira.txt')
-    localCost = A.partition()
+    localCost, plot = A.partition()
     print "Cost\t", localCost
     print("%s seconds" % (time.time() - start_time))
+    #graph
+    plotting.plot("alu2", plot)
 
 
 

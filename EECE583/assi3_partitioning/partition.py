@@ -26,7 +26,7 @@ class Partition:
     def __init__(self, filename):
         self.filename = filename
         self.netlist, self.blocklist, self.netsOfBlock, self.num_cells, self.num_rows, self.num_cols = self.readfile(filename)
-#         self.initialize()
+        self.initialize()
     
     '''
     Initialization: create two lists: partA, partB. 
@@ -45,6 +45,10 @@ class Partition:
         #The following partitions are SETS of UNLOCKED block NUMBERS
         self.partAUnlocked = set()
         self.partBUnlocked = set()
+        
+        #Populate sets
+        self.partAUnlocked = set(self.partA)
+        self.partBUnlocked = set(self.partB)
         
         #The following partitions are SETS of LOCKED block NUMBERS
         self.partALocked = set()
@@ -66,7 +70,7 @@ class Partition:
                 self.location[blocknumbers[i]] = 1
                 turn = 0;
     
-        self.unlockAllBlocks();
+#         self.unlockAllBlocks();
 
 #         print self.location
 
@@ -85,12 +89,20 @@ class Partition:
     This function simply unlocks all blocks, by creating partAUnlocked & partBUnlocked from partA & partB
     '''
     def unlockAllBlocks(self):
-        #Delete all elements in sets
+        #Delete all elements in unlocked sets
         self.partAUnlocked.clear()
         self.partBUnlocked.clear()
+        
+        #Delete all elements in locked sets
+        self.partALocked.clear()
+        self.partBLocked.clear()
+        
         #Populate sets
-        self.partAUnlocked = set(self.partA)
-        self.partBUnlocked = set(self.partB)
+        for index in xrange(self.num_cells):
+            if self.location[index] == 0:
+                self.partAUnlocked.add(index)
+            else:
+                self.partBUnlocked.add(index)
         return    
     
     '''
@@ -192,6 +204,7 @@ class Partition:
             else:
                 gain = gain - 1
 #         print gain
+#         print gain
         return gain
     
     '''
@@ -249,7 +262,7 @@ class Partition:
                 if max < self.gainOfBlock[blockIndex]:
                     max = self.gainOfBlock[blockIndex]
                     index = blockIndex
-#         print "gain: " + str(max)
+        print "gain: " + str(max)
         return index
     
     '''
@@ -273,34 +286,55 @@ class Partition:
     randomize
     '''
     def partition(self):
+        best_location = self.location
+        plot = []
         for passes in xrange(0, 6):
-            self.initialize()
-            print "initial Cost: " + str(self.initialTotalCost())
-            turn = 0
+            
+
 #             print self.partA
 #             print self.partB
             self.calcGainOfBlocks()
+            self.unlockAllBlocks()
+            #save values of best iteration
             best_cost = sys.maxint
-            while(self.partAUnlocked or self.partBUnlocked):   #if either set is NOT empty
+#             print len(self.partAUnlocked), len(self.partBUnlocked)
+            if len(self.partAUnlocked) > len(self.partBUnlocked):
+                turn = 0
+            else:
+                turn = 1;
                 
-                if turn == 0:
+            while(self.partAUnlocked or self.partBUnlocked):   #if either set is NOT empty
+                if turn == 0 and self.partAUnlocked:
                     blockIndex = self.getBlockOfHighestGainOfUnlockedBlocks("A")
 #                     print "index in A: " + str(blockIndex)
                     turn = 1
-                else:
+                    self.moveBlockAndLock(blockIndex)
+                    self.updateGainOfRelatedBlocks(blockIndex)
+                elif turn == 1 and self.partBUnlocked:
                     blockIndex = self.getBlockOfHighestGainOfUnlockedBlocks("B")
                     turn = 0
+                    self.moveBlockAndLock(blockIndex)
+                    self.updateGainOfRelatedBlocks(blockIndex)
+                else:       #to exit last iteration
+                    if turn == 1: turn = 0
+                    elif turn == 0: turn = 1
 #                     print "index in B: " + str(blockIndex)
-                self.moveBlockAndLock(blockIndex)
-                self.updateGainOfRelatedBlocks(blockIndex)
+                
 #                 print "totalCost: " + str(self.totalCost())
 
                 temp_cost = self.totalCost()
+#                 print temp_cost
                 if best_cost > temp_cost:
                     best_cost = temp_cost
+                    best_location = numpy.copy(self.location)   #is this just a reference?
             
-        print "Best Cost: " + str(best_cost)    
-        return best_cost
+                plot.append(temp_cost)
+
+            self.location = numpy.copy(best_location)
+            print "Best Cost in Pass: " + str(best_cost)  
+#             print len(self.partALocked), len(self.partBLocked)
+        
+        return best_cost, plot
     '''
     Input File Format
     The circuit input format is as follows. The first line contains the number of cells to be placed, the number

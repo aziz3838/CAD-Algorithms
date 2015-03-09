@@ -17,8 +17,14 @@ def plot(name, data):
 #     line, = plt.plot(data, linewidth=2)
 #  
 #     plt.show()
+
+    #Calculating the split line location
+    split = len(data)/6
+    
     pylab.figure(name)
     pylab.plot(data, label=name)
+    for i in xrange(0, 6):
+        pylab.axvline(x=split*i, linewidth=1, color='k')
     pylab.xlabel('Iterations')
     pylab.ylabel('Cost')
     pylab.title(name)
