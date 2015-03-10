@@ -12,10 +12,10 @@ import time
 def main(): 
     start_time = time.time()    
 
-#     measurePerformance();
-    measurePerformanceOneBench();
+    measurePerformance();
+#     measurePerformanceOneBench();
 
-    print("%s seconds" % (time.time() - start_time))
+    print("%.1f seconds" % (time.time() - start_time))
 
 
 
@@ -30,15 +30,13 @@ def measurePerformance():
     for bench in benchmarks:
         start_time = time.time()
         A = Partition('benchmarks/' + bench)
-#         localCost = A.simulatedAnnealing()
-#         localCost, plot = A.partition()
-        localCost = A.partition()
+        localCost, plot, number_of_passes = A.partition()
         print path.splitext(path.basename(bench))[0], "\t", localCost
         totalCost += localCost
-        print("%s seconds" % (time.time() - start_time))
+        print("%.3f seconds" % (time.time() - start_time))
         
         #graph
-#         plotting.plot(path.splitext(path.basename(bench))[0], plot)
+        plotting.plot(path.splitext(path.basename(bench))[0], plot, number_of_passes)
     
     print "Overall Average\t", totalCost/len(benchmarks) 
 
@@ -47,11 +45,11 @@ def measurePerformance():
 def measurePerformanceOneBench():
     start_time = time.time()
     A = Partition('benchmarks/paira.txt')
-    localCost, plot = A.partition()
+    localCost, plot, number_of_passes = A.partition()
     print "Cost\t", localCost
-    print("%s seconds" % (time.time() - start_time))
+    print("%.3f seconds" % (time.time() - start_time))
     #graph
-    plotting.plot("alu2", plot)
+    plotting.plot("paira", plot, number_of_passes)
 
 
 

@@ -54,21 +54,10 @@ class Partition:
         self.partALocked = set()
         self.partBLocked = set()
 
-        turn = 0;
-        #Create list of consecutive numbers
-        blocknumbers = [i for i in xrange(self.num_cells)]
-        #Shuffle the list of consecutive numbers
-        random.shuffle(blocknumbers)
-        #Place the shuffled numbers in partA and partB, taking turns
-        for i in xrange(0, self.num_cells):
-            if(turn == 0):
-                self.partA.append(blocknumbers[i])
-                self.location[blocknumbers[i]] = 0
-                turn = 1;
-            else:
-                self.partB.append(blocknumbers[i])
-                self.location[blocknumbers[i]] = 1
-                turn = 0;
+        
+        
+        
+        self.initialPartition()
     
 #         self.unlockAllBlocks();
 
@@ -79,6 +68,92 @@ class Partition:
 #         print self.partAUnlocked
         return
     
+    
+#     '''
+#     Random Initial partition
+#     '''
+#     def initialPartition(self):
+#         turn = 0;
+#         #Create list of consecutive numbers
+#         blocknumbers = [i for i in xrange(self.num_cells)]
+#         #Shuffle the list of consecutive numbers
+#         random.shuffle(blocknumbers)
+#         #Place the shuffled numbers in partA and partB, taking turns
+#         for i in xrange(0, self.num_cells):
+#             if(turn == 0):
+#                 self.partA.append(blocknumbers[i])
+#                 self.location[blocknumbers[i]] = 0
+#                 turn = 1;
+#             else:
+#                 self.partB.append(blocknumbers[i])
+#                 self.location[blocknumbers[i]] = 1
+#                 turn = 0;
+#         return
+    
+#     '''
+#     Taking turns for Initial partition
+#     '''
+#     def initialPartition(self):
+#         turn = 0;
+#         #Create list of consecutive numbers
+#         blocknumbers = [i for i in xrange(self.num_cells)]
+#         #Shuffle the list of consecutive numbers
+#         #random.shuffle(blocknumbers)
+#         #Place the shuffled numbers in partA and partB, taking turns
+#         for i in xrange(0, self.num_cells):
+#             if(turn == 0):
+#                 self.partA.append(blocknumbers[i])
+#                 self.location[blocknumbers[i]] = 0
+#                 turn = 1;
+#             else:
+#                 self.partB.append(blocknumbers[i])
+#                 self.location[blocknumbers[i]] = 1
+#                 turn = 0;
+#         return
+    
+#     '''
+#     Picking blocks with more connections first for Initial partition
+#     '''
+#     def initialPartition(self):
+#         turn = 0;
+#         blocklist_with_connections = []
+#         for i in xrange(0, self.num_cells):
+#             blocklist_with_connections.append((i, len(self.blocklist[i])))
+#         blocklist_with_connections.sort(key= lambda r:r[1], reverse=True)
+# #         print blocklist_with_connections
+#         #Place the shuffled numbers in partA and partB, taking turns
+#         for i in xrange(0, self.num_cells):
+#             if(turn == 0):
+#                 self.partA.append(blocklist_with_connections[i][0])
+#                 self.location[blocklist_with_connections[i][0]] = 0
+#                 turn = 1;
+#             else:
+#                 self.partB.append(blocklist_with_connections[i][0])
+#                 self.location[blocklist_with_connections[i][0]] = 1
+#                 turn = 0;
+#         return
+    '''
+    Picking blocks, partA gets ones with most connections, partB gets ones with least connections
+    '''
+    def initialPartition(self):
+        turn = 0;
+        blocklist_with_connections = []
+        for i in xrange(0, self.num_cells):
+            blocklist_with_connections.append((i, len(self.blocklist[i])))
+        blocklist_with_connections.sort(key= lambda r:r[1], reverse=True)
+#         print blocklist_with_connections
+        #Place the shuffled numbers in partA and partB, taking turns
+        for i in xrange(0, self.num_cells):
+            if(turn == 0):
+                self.partA.append(blocklist_with_connections[i][0])
+                self.location[blocklist_with_connections[i][0]] = 0
+                turn = 1;
+            else:
+                self.partB.append(blocklist_with_connections[self.num_cells-i-1][0])
+                self.location[blocklist_with_connections[self.num_cells-i-1][0]] = 1
+                turn = 0;
+        return
+            
     '''
     locate in which partition the blockIndex is. 0 for A, 1 for B
     '''
@@ -200,7 +275,7 @@ class Partition:
         gain = 0
         for relatedBlock in self.blocklist[block]:
             if (inPartA and self.locate(relatedBlock) == 1) or (inPartB and self.locate(relatedBlock) == 0):
-                gain = gain + 1
+                gain = gain + 3
             else:
                 gain = gain - 1
 #         print gain
@@ -262,7 +337,7 @@ class Partition:
                 if max < self.gainOfBlock[blockIndex]:
                     max = self.gainOfBlock[blockIndex]
                     index = blockIndex
-        print "gain: " + str(max)
+#         print "gain: " + str(max)
         return index
     
     '''
@@ -288,15 +363,21 @@ class Partition:
     def partition(self):
         best_location = self.location
         plot = []
+        pass_plot = []
+        #save values of best iteration
+        best_cost = sys.maxint
+        number_of_passes = 0
+        #do not do another pass if results are the same
+        best_cost_per_pass = []
         for passes in xrange(0, 6):
-            
+         
+            pass_plot = []    
 
 #             print self.partA
 #             print self.partB
             self.calcGainOfBlocks()
             self.unlockAllBlocks()
-            #save values of best iteration
-            best_cost = sys.maxint
+            
 #             print len(self.partAUnlocked), len(self.partBUnlocked)
             if len(self.partAUnlocked) > len(self.partBUnlocked):
                 turn = 0
@@ -328,13 +409,19 @@ class Partition:
                     best_cost = temp_cost
                     best_location = numpy.copy(self.location)   #is this just a reference?
             
-                plot.append(temp_cost)
-
+                pass_plot.append(temp_cost)
+            plot.extend(pass_plot)
             self.location = numpy.copy(best_location)
-            print "Best Cost in Pass: " + str(best_cost)  
+#             print "Best Cost in Pass: " + str(best_cost)  
+            best_cost_per_pass.append(best_cost)
+            number_of_passes = number_of_passes + 1
+            #do not do another pass if results are the same
+            if(len(best_cost_per_pass)>=2):
+                if best_cost_per_pass[len(best_cost_per_pass)-1] == best_cost_per_pass[len(best_cost_per_pass)-2]:
+                    return best_cost, plot, number_of_passes
 #             print len(self.partALocked), len(self.partBLocked)
-        
-        return best_cost, plot
+            
+        return best_cost, plot, number_of_passes
     '''
     Input File Format
     The circuit input format is as follows. The first line contains the number of cells to be placed, the number
