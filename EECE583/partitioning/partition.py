@@ -143,15 +143,12 @@ class Partition:
         blocklist_with_connections.sort(key= lambda r:r[1], reverse=True)
 #         print blocklist_with_connections
         #Place the shuffled numbers in partA and partB, taking turns
-        for i in xrange(0, self.num_cells):
-            if(turn == 0):
-                self.partA.append(blocklist_with_connections[i][0])
-                self.location[blocklist_with_connections[i][0]] = 0
-                turn = 1;
-            else:
-                self.partB.append(blocklist_with_connections[self.num_cells-i-1][0])
-                self.location[blocklist_with_connections[self.num_cells-i-1][0]] = 1
-                turn = 0;
+        for i in xrange(0, self.num_cells/2):
+            self.partA.append(blocklist_with_connections[i][0])
+            self.location[blocklist_with_connections[i][0]] = 0
+        for i in xrange(self.num_cells/2, self.num_cells):
+            self.partB.append(blocklist_with_connections[i][0])
+            self.location[blocklist_with_connections[i][0]] = 1
         return
             
     '''
