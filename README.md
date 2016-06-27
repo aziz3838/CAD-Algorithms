@@ -21,9 +21,9 @@ This is an enhanced version of the Kernighan-Lin/Fiduccia-Mattheyses bi-partitio
 
 I created a simple GUI that plots Cost (Cut-size) vs. Iterations per benchmark.
 
-<img src="assets/1.png" width="400">
+<img src="assets/1.png" width="500">
 
-<img src="assets/2.png" width="400">
+<img src="assets/2.png" width="500">
 
 The vertical lines represent divisions between different passes (the number of passes differ, with a maximum of 6 passes)
 
@@ -57,7 +57,7 @@ This is a Cell Placement tool based on Simulated Annealing optimization algorith
 
 3. The number of iterations in the inner loop is not fixed. It increase as T decreases, especially at the end. I decided to do this after studying the e(-deltaCost/T) graph:
 
-<img src="assets/3.png" width="400">
+<img src="assets/3.png" width="500">
 
 The temperature range is from 7 to 0.0001. When deltaCost = 1, T=1, wrong moves are picked 36% of the time. From 1 to 0 is where the algorithm starts getting picky, and I needed more iterations there.
 
@@ -69,7 +69,7 @@ The temperature range is from 7 to 0.0001. When deltaCost = 1, T=1, wrong moves 
 
 The GUI plots Cost vs. Iterations. Instead of making the update happen in real time, the code collects data while running the simulated annealing algorithm, and displays a graph at the end of each benchmark.
 
-<img src="assets/4.png" width="400">
+<img src="assets/4.png" width="500">
 
 ### Results
 
@@ -97,6 +97,6 @@ This is a Router based on Lee-Moore (Dijkstra) Shortest Path Algorithm, expanded
 
 The GUI displays the routing algorithm as it progresses.
 
-<img src="assets/5.png" width="400">
+<img src="assets/5.png" width="500">
 
 ![6](assets/6.png)
